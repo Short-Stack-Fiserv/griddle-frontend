@@ -8,7 +8,6 @@ import LeaseService from "../../service/LeaseService";
 import BillService from "../../service/BillService";
 import TenantService from "../../service/TenantService";
 import PaymentService from "../../service/PaymentService";
-import useAuth from "../../hooks/useAuth";
 
 export default function ViewAllTenantInfo() {
     let today = new Date();
@@ -45,19 +44,8 @@ export default function ViewAllTenantInfo() {
     }
 
     let location = useLocation();
-    let username = location.state.username;
-    console.log("tenant username "+ username);
-
-    let [tenant, setTenant] = useState({
-        id: '',
-        email: '',
-        phone: '',
-        username: '',
-        password: '',
-        balance: '',
-        lastName: '',
-        firstName: ''
-    });
+    let tenant = location.state.tenant;
+    console.log("tenant id "+ tenant.id);
 
     let[leases, setLeases] = useState({
         leases : {}
@@ -87,28 +75,8 @@ export default function ViewAllTenantInfo() {
         apartmentID:''
     })
 
-    const { auth } = useAuth();
-    console.log("auth " + auth.accessToken);
-
     useEffect (()=>{
-        TenantService.findTenantByUsername(username, auth.accessToken).then((response)=>{
-            setTenant(()=>({
-                id: response.data.id,
-                email: response.data.email,
-                phone: response.data.phone,
-                username: response.data.username,
-                password: response.data.password,
-                balance: response.data.balance,
-                lastName: response.data.lastName,
-                firstName: response.data.firstName
-            }));
-            console.log("1", tenant)
-            console.log(JSON.stringify(response.data));
-        }, ()=>{});
-    }, {});
-
-    useEffect (()=>{
-        LeaseService.findLeaseByTenant(tenant.id, auth.accessToken).then((response)=>{
+        LeaseService.findLeaseByTenant(tenant.id).then((response)=>{
             setLeases(()=>({
                 leases: response.data
             }));
@@ -117,7 +85,7 @@ export default function ViewAllTenantInfo() {
     console.log('Single Leases:', leases);
 
     useEffect (()=>{
-        BillService.getAllBills(auth.accessToken).then((response)=>{
+        BillService.getAllBills().then((response)=>{
             setBills(()=>({
                 bills: response.data
             }));
@@ -125,7 +93,7 @@ export default function ViewAllTenantInfo() {
     }, []);
 
     useEffect (()=>{
-        TenantService.findBuildingByTenant(tenant.id, auth.accessToken).then((response)=>{
+        TenantService.findBuildingByTenant(tenant.id).then((response)=>{
             setBuilding(()=>({
                 zip: response.data[0].zip,
                 buildingname: response.data[0].buildingname,
@@ -141,19 +109,19 @@ export default function ViewAllTenantInfo() {
     }, []);
 
     useEffect (()=>{
-        TenantService.findApartmentByTenant(tenant.id, auth.accessToken).then((response)=>{
+        TenantService.findApartmentByTenant(tenant.id).then((response)=>{
             setApartment(()=>({
                 buildingid: response.data[0].buildingid,
                 apartmentnumber:response.data[0].apartmentnumber,
                 apartmentID:response.data[0].apartmentID
             }));
         }, (response)=>{
-            console.log("TEST FIND APARTMENT " + JSON.stringify(response.data));
+            console.log("TEST FIND BUILDING " + JSON.stringify(response.data));
         });
     }, []);
 
     useEffect (()=>{
-        PaymentService.findAllPaymentsByTenant(tenant.id, auth.accessToken).then((response)=>{
+        PaymentService.findAllPaymentsByTenant(tenant.id).then((response)=>{
             setPayments(()=>({
                 payments : response.data
             }));

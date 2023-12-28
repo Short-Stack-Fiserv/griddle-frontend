@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
+import React from "react";
 import axios from "axios";
-import useAuth from "../hooks/useAuth";
 
 const getAllTenantsUrl = "http://localhost:8080/api/tenants";
 const getAllTenantsByLandlordUrl = "http://localhost:8080/api/tenants/landlord/";
@@ -12,53 +11,40 @@ const addTenantUrl = "http://localhost:8080/api/addTenant";
 const updateTenantUrl = "http://localhost:8080/api/updateTenant";
 const deleteTenantUrl = "http://localhost:8080/api/deleteTenant/";
 
-
 class TenantService {
-    getAllTenants(accessToken) {
+    getAllTenants() {
         return axios.get(getAllTenantsUrl);
     }
     
-    getAllTenantsByLandlord(id, accessToken) {
+    getAllTenantsByLandlord(id) {
         return axios.get(getAllTenantsByLandlordUrl + id);
     }
 
-    findTenant(id, accessToken) {
+    findTenant(id) {
         return axios.get(findTenantUrl + id);
     }
 
-    findBuildingByTenant(id, accessToken) {
+    findBuildingByTenant(id) {
         return axios.get(findBuildingByTenantUrl + id);
     }
 
-    findApartmentByTenant(id, accessToken) {
-        console.log("service: " + id);
-        return axios.get(findApartmentByTenantUrl + id, {
-            headers: {
-                Authorization : `Bearer ${accessToken}`
-            }, });
+    findApartmentByTenant(id) {
+        return axios.get(findApartmentByTenantUrl + id);
     }
 
-    async findTenantByUsername(username, accessToken) {
-        // const { auth } = useAuth();
-        // return axios.get(findTenantByUsernameUrl, {params : {username : username}});
-        return await axios.get(findTenantByUsernameUrl, {
-            headers: {
-                Authorization : `Bearer ${accessToken}`
-            }, 
-            params : {username : username}
-        },
-    );
+    findTenantByUsername(username) {
+        return axios.get(findTenantByUsernameUrl, {params : {username : username}})
     }
 
-    addTenant(tenant, accessToken) {
+    addTenant(tenant) {
         return axios.post(addTenantUrl, tenant);
     }
 
-    updateTenant(tenant, accessToken) {
+    updateTenant(tenant) {
         return axios.put(updateTenantUrl, tenant);
     }
 
-    deleteTenant(id, accessToken) {
+    deleteTenant(id) {
         return axios.delete(deleteTenantUrl + id);
     }
 }
